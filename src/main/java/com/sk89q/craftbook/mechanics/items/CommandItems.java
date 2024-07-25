@@ -393,6 +393,24 @@ public class CommandItems extends AbstractCraftBookMechanic {
         deathPersistItems.remove(event.getPlayer().getUniqueId());
     }
 
+    private boolean areItemsSimilar(ItemStack first, ItemStack second) {
+        if(first == null || second == null) {
+            return false;
+        }
+        if(first.getType() != second.getType()) {
+            return false;
+        }
+        final ItemMeta firstMeta = first.getItemMeta();
+        final ItemMeta secondMeta = second.getItemMeta();
+        if(!firstMeta.hasDisplayName() && !secondMeta.hasDisplayName()) {
+            return true;
+        }
+        if(firstMeta.hasDisplayName() && secondMeta.hasDisplayName()) {
+            return firstMeta.getDisplayName().equals(secondMeta.getDisplayName());
+        }
+        return false;
+    }
+
     public void performCommandItems(ItemStack item, final Player player, final Event event) {
         if (event != null && !EventUtil.passesFilter(event))
             return;
@@ -401,7 +419,7 @@ public class CommandItems extends AbstractCraftBookMechanic {
 
         for(CommandItemDefinition def : definitions) {
             current: {
-            if(ItemUtil.areItemsIdentical(def.stack, item)) {
+            if(areItemsSimilar(def.stack, item)) {
                 final CommandItemDefinition comdef = def;
 
                 if(!comdef.clickType.doesPassType(event)) break current;
@@ -440,7 +458,7 @@ public class CommandItems extends AbstractCraftBookMechanic {
                         int amount = 0;
 
                         for (ItemStack tStack : player.getInventory().getContents()) {
-                            if (ItemUtil.areItemsIdentical(stack, tStack)) {
+                            if (areItemsSimilar(stack, tStack)) {
 
                                 amount += tStack.getAmount();
 
@@ -467,7 +485,7 @@ public class CommandItems extends AbstractCraftBookMechanic {
 
                         for (int i = 0; i < player.getInventory().getContents().length; i++) {
                             ItemStack tStack = player.getInventory().getContents()[i];
-                            if (ItemUtil.areItemsIdentical(stack, tStack)) {
+                            if (areItemsSimilar(stack, tStack)) {
                                 ItemStack toRemove = tStack.clone();
                                 if (toRemove.getAmount() > amount) {
 
